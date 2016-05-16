@@ -42,7 +42,7 @@ Article.loadAll = function(dataWePassIn) {
 
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View. */
-Article.fetchAll = function() {
+Article.oldFetchAll = function() {
   if (localStorage.hackerIpsum) {
     Article.loadAll(JSON.parse(localStorage.hackerIpsum));
     articleView.initIndexPage();
@@ -57,8 +57,12 @@ Article.fetchAll = function() {
     // );
     //TODO:DONE Now call the correct method here that will render the index page.
   } else {
-    $.getJSON('data/hackerIpsum.json', function(data) {
+    $.getJSON('data/hackerIpsum.json', function(data,status, xhr) {
+      var etag = xhr.getResponseHeader('eTag');
+
+
       Article.loadAll(data);
+      localStorage.setItem('headerDigest', etag);
       localStorage.setItem('hackerIpsum', JSON.stringify(data));
       articleView.initIndexPage();
     });
@@ -88,3 +92,20 @@ Article.fetchAll = function() {
   } else {}
 }
 */
+
+Article.fetchAll = function() {
+  $.ajax({
+    type: 'HEAD',
+    url: 'data/hackerIpsum.json',
+    success: function(data, status, xhr){
+      var newDigest = xhr.getResponseHeader('eTag');
+      if (newDigest != localStorage.headerDigest){
+        localStorage.clear('hackerIpsum');
+        localStorage.clear('headerDigest');
+
+      }
+      Article.oldFetchAll();
+
+    }
+  });
+};
