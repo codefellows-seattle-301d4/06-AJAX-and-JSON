@@ -16,7 +16,7 @@ Article.all = [];
 Article.prototype.toHtml = function(scriptTemplateId) {
   var template = Handlebars.compile((scriptTemplateId).html());
 
-  this.daysAgo = parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000);
+  this.daysAgo = parseInt((new Date() - new Date(this.publishedOn)) / 60 / 60 / 24 / 1000);
   this.publishStatus = this.publishedOn ? 'published ' + this.daysAgo + ' days ago' : '(draft)';
   this.body = marked(this.body);
 
@@ -42,21 +42,19 @@ Article.loadAll = function(dataWePassIn) {
 
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View. */
+
 Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
-    $.ajax({
-      url: 'data/hackerIpsum.json',
-      success: function (data, message, xhr) {
-        var eTag = xhr.getResponseHeader('eTag');
-        console.log(message, eTag);
-        localStorage.eTag = eTag;
-      }
-      if (localStorage.eTag === eTag){
-        Article.loadAll(JSON.parse(localStorage.hackerIpsum));
-        articleView.initIndexPage();
-        console.log('they are equal');
-      };
-    });
+  // $.ajax({
+  //   url: 'data/hackerIpsum.json',
+  //   success: function (data, message, xhr) {
+  //     var eTag = xhr.getResponseHeader('eTag');
+  //     console.log(message, eTag);
+  //     localStorage.eTag = eTag;
+  //   }
+  // });
+  if (localStorage.hackerIpsum){
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+    articleView.initIndexPage();
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
@@ -84,9 +82,8 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
-  }
+  };
 };
-
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
    lab will be saving the eTag located in Headers, to see if it's been updated!
