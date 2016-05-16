@@ -49,10 +49,12 @@ Article.fetchAll = function() {
      2. Then We can render the index page (using the proper method on the
         articleView object). */
 
-    // Article.loadAll(//TODO: Process our localStorage!
+    // Article.loadAll(//DONE: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
-    //TODO: Now call the correct method here that will render the index page.
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+    //DONE: Now call the correct method here that will render the index page.
+    articleView.initIndexPage();
   } else {
     /* TODO: When we don't already have our data, we need to:
 
