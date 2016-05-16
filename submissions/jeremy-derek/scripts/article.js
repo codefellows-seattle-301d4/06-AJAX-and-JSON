@@ -44,17 +44,27 @@ Article.loadAll = function(dataWePassIn) {
  source, process it, then hand off control to the View. */
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+    articleView.initIndexPage();
+
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
         articleView object). */
 
-    // Article.loadAll(//TODO: Process our localStorage!
+    // Article.loadAll(//TODO:DONE Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
-    //TODO: Now call the correct method here that will render the index page.
+    //TODO:DONE Now call the correct method here that will render the index page.
   } else {
-    /* TODO: When we don't already have our data, we need to:
+    $.getJSON('data/hackerIpsum.json', function(data) {
+      Article.loadAll(data);
+      localStorage.setItem('hackerIpsum', JSON.stringify(data));
+      articleView.initIndexPage();
+    });
+
+
+    /* TODO: DONE When we don't already have our data, we need to:
 
      - Retrieve our JSON file with AJAX
        (which jQuery method is best for this?).
