@@ -69,9 +69,9 @@ Article.fetchAll = function() {
       3. And then render the index page (What method was that?) */
     $.getJSON('data/hackerIpsum.json', function(data){
       console.log(data);
-      var jsonData = Article.all.loadAll('data/hackerIpsum.json');
-      localStorage.set(jsonData);
-      jsonData.toHtml();
+      var jsonData = Article.loadAll(data);
+      localStorage.setItem(data, JSON.stringify(Article.all));
+      articleView.initIndexPage();
     });
   }
 };
