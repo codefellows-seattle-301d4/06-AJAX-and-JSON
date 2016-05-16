@@ -42,8 +42,8 @@ Article.loadAll = function(dataWePassIn) {
 
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View. */
-Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
+// Article.fetchAll = function() {
+//   if (localStorage.hackerIpsum) {
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
@@ -53,9 +53,9 @@ Article.fetchAll = function() {
     // Tip: Be careful when handling different data types between localStorage!
     // );
     //DONE: Now call the correct method here that will render the index page.
-    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
-    articleView.initIndexPage();
-  } else {
+  //   Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+  //   articleView.initIndexPage();
+  // } else {
     /* DONE: When we don't already have our data, we need to:
 
      - Retrieve our JSON file with AJAX
@@ -67,21 +67,53 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
-    $.getJSON('data/hackerIpsum.json', function(data) {
-      Article.loadAll(data);
-      localStorage.hackerIpsum = JSON.stringify(data);
-      articleView.initIndexPage();
-    });
-  }
-};
+//     $.getJSON('data/hackerIpsum.json', function(data) {
+//       Article.loadAll(data);
+//       localStorage.hackerIpsum = JSON.stringify(data);
+//       articleView.initIndexPage();
+//     });
+//   }
+// };
 
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
-   lab will be saving the eTag located in Headers, to see if it's been updated!
-  Article.fetchAll = function() {
-    if (localStorage.hackerIpsum) {
+   lab will be saving the eTag located in Headers, to see if it's been updated!*/
+function getJasonToLocalStorage() {
+  $.getJSON('data/hackerIpsum.json', function(data) {
+    localStorage.hackerIpsum = JSON.stringify(data);
+    Article.loadAll(data);
+    articleView.initIndexPage();
+    console.log('new local storage fron json created');
+  });
+}
+
+Article.fetchAll = function() {
+  if (localStorage.hackerIpsum) {
+    console.log('local storage exists');
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      success: function(data, message, xhr){
+        if(xhr.getResponseHeader('eTag') == JSON.parse(localStorage.eTag)) {
+          console.log('new etag=old');
+          Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+          articleView.initIndexPage();
+        }else{
+          console.log('new etag is different');
+          getJasonToLocalStorage();
+          localStorage.eTag = JSON.stringify(xhr.getResponseHeader('eTag'));
+        };
+      }
+    });
+  }else{
+    console.log('no local storage');
+    getJasonToLocalStorage();
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      success: function(data, message, xhr){
+        localStorage.eTag = JSON.stringify(xhr.getResponseHeader('eTag'));
+      }
+    });
+  }
+};
       // Let's make a request to get the eTag (hint: you may need to use a different
       // jQuery method for this more explicit request).
-  } else {}
-}
-*/
