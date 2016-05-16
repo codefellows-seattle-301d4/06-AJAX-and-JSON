@@ -54,6 +54,15 @@ Article.fetchAll = function() {
     console.log('hola');
     Article.loadAll(JSON.parse(localStorage.hackerIpsum));
     articleView.initIndexPage();
+
+    $.ajax({
+      type: 'GET',
+      url: '/data/hackerIpsum.json',
+      success: function(data, message, xhr) {
+        var eTag = xhr.getResponseHeader('eTag');
+        console.log(message, eTag);
+      }
+    });
     // Tip: Be careful when handling different data types between localStorage!
     // );
     //TODO: Now call the correct method here that will render the index page.
@@ -87,3 +96,4 @@ Article.fetchAll = function() {
   } else {}
 }
 */
+//
