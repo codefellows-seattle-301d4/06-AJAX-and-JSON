@@ -52,6 +52,17 @@ Article.fetchAll = function() {
     // Article.loadAll(//TODO: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
+    $.ajax( {
+      url: '../data/hackerIpsum.json',
+      success: function(data, message, xhr) {
+        var eTag = xhr.getResponseHeader('eTag');
+        if (eTag !== JSON.parse(localStorage.getItem(('stringedETag')))) {
+          Article.all = [];
+          Article.getData('../data/hackerIpsum.json');
+        }
+      }
+    });
+
     //TODO: Now call the correct method here that will render the index page.
   } else {
     /* TODO: When we don't already have our data, we need to:
@@ -65,9 +76,26 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
+    Article.getData('../data/hackerIpsum.json').success(function(data, message, xhr) {
+      var eTag = xhr.getResponseHeader('etag');
+      localStorage.setItem('stringedETag', JSON.stringify(eTag));
+    });
   }
 };
 
+Article.appendArticles = function(articleArray) {
+  articleArray.forEach(function(articleItem) {
+    $('#articles').append(articleItem.toHtml($('#article-template')));
+  });
+};
+
+Article.getData = function(filePath) {
+  $.getJSON(filePath, function(data) {
+    Article.loadAll(data);
+    localStorage.setItem('hackerIpsum', JSON.stringify(Article.all));
+    Article.appendArticles(Article.all);
+  });
+};
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
    lab will be saving the eTag located in Headers, to see if it's been updated!
