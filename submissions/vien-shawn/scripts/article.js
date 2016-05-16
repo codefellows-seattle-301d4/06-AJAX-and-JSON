@@ -42,54 +42,87 @@ Article.loadAll = function(dataWePassIn) {
 
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View. */
+
+ /* When our data is already in localStorage:
+  1. We can process it by calling the .loadAll() method (started below),
+  2. Then We can render the index page (using the proper method on the
+     articleView object). */
+
 Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
-    /* When our data is already in localStorage:
-     1. We can process it by calling the .loadAll() method (started below),
-     2. Then We can render the index page (using the proper method on the
-        articleView object). */
 
-    // Article.loadAll(//TODO: Process our localStorage!
-    // Tip: Be careful when handling different data types between localStorage!
-    // );
-    //TODO: Now call the correct method here that will render the index page.
+  // Article.loadAll(//TODO: Process our localStorage!
+  // Tip: Be careful when handling different data types between localStorage!
+  // );
+  //TODO: Now call the correct method here that will render the index page.
+  // $.ajax({
+  //   url: 'data/hackerIpsum.json',
+  //   success: function(data, message, xhr) {
+  //     eTag = xhr.getResponseHeader('eTag');
+  //     console.log(message, eTag);
+  //     // console.log(xhr);
+  //   }
+  // });
+  
+  if (localStorage.eTagValue) {
+    var newETag;
+
+    console.log('localStorage etag value is ' + JSON.parse(localStorage.eTagValue));
+
+    $.ajax({
+      type: 'HEAD',
+      url: 'data/hackerIpsum.json',
+      success: function(data, message, xhr) {
+        newETag = xhr.getResponseHeader('eTag');
+        console.log('new eTag is ' + newETag);
+        console.log('stored etag is ' + JSON.parse(localStorage.eTagValue));
+        // console.log(xhr);
+
+        if (newETag === JSON.parse(localStorage.eTagValue)) {
+          console.log('no change in database');
+          Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+          articleView.initIndexPage();
+
+        } else {
+          $.getJSON('data/hackerIpsum.json', function(jsondata) {
+            Article.loadAll(jsondata);
+            localStorage.eTagValue = JSON.stringify(newETag);
+            localStorage.hackerIpsum = JSON.stringify(jsondata);
+            console.log('loading new data');
+            articleView.initIndexPage();
+          });
+        }
+      }
+    });
+
   } else {
-    /* TODO: When we don't already have our data, we need to:
 
-     - Retrieve our JSON file with AJAX
-       (which jQuery method is best for this?).
+      /* TODO: When we don't already have our data, we need to:
 
-     Now within this method, we can:
-      1. Pass the resulting JSON data into the .loadAll method
+       - Retrieve our JSON file with AJAX
+         (which jQuery method is best for this?).
 
-      2. Store that same data in localStorage so we can skip the server call next time
+       Now within this method, we can:
+        1. Pass the resulting JSON data into the .loadAll method
 
-      3. And then render the index page (What method was that?) */
+        2. Store that same data in localStorage so we can skip the server call next time
 
-    $.getJSON( "data/hackerIpsum.json", function( data ) {
-      // $( ".result" ).html( data );
-      console.log(data);
-      Article.loadAll(data);
-      console.log('loaded data');
-      localStorage.articleData = JSON.stringify(data);
-      // localStorage.articleData = data;
-      console.log(localStorage);
-      alert( "Load was performed." );
+        3. And then render the index page (What method was that?) */
 
-      articleView.initIndexPage();
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      success: function(data, message, xhr) {
+        var eTag = xhr.getResponseHeader('eTag');
+        console.log(message, eTag);
+        localStorage.eTagValue = JSON.stringify(eTag);
+        console.log('saved new eTag');
 
+        Article.loadAll(data);
+        console.log('loaded data');
+        localStorage.hackerIpsum = JSON.stringify(data);
+        alert( "Load was performed." );
+
+        articleView.initIndexPage();
+      }
     });
   }
 };
-
-
-/* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
-   get some additional typing practice here. Our main goal in this part of the
-   lab will be saving the eTag located in Headers, to see if it's been updated!
-  Article.fetchAll = function() {
-    if (localStorage.hackerIpsum) {
-      // Let's make a request to get the eTag (hint: you may need to use a different
-      // jQuery method for this more explicit request).
-  } else {}
-}
-*/
