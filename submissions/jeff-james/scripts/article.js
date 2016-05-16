@@ -44,6 +44,7 @@ Article.loadAll = function(dataWePassIn) {
  source, process it, then hand off control to the View. */
 Article.fetchAll = function() {
   if (localStorage.data) {
+    console.log('local storage exists');
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
@@ -52,12 +53,31 @@ Article.fetchAll = function() {
     // Article.loadAll(//TODO: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
-    console.log('local storage exists');
-    var localData = localStorage.getItem('data');
-    Article.loadAll(JSON.parse(localData));
-    //TODO: Now call the correct method here that will render the index page.
-    // Article.loadAll();
-    articleView.initIndexPage();
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      success: function (data, message, xhr) {
+        var eTag = xhr.getResponseHeader('eTag');
+        console.log('eTag = ' + eTag);
+        var compareETag = JSON.parse(localStorage.getItem('eTag1'));
+        console.log('eTag1 = ' + compareETag);
+        // console.log(message, eTag);
+        if (eTag !== compareETag) {
+          console.log('are not the same');
+          $.getJSON('data/hackerIpsum.json', function(data){
+            console.log(data);
+            Article.loadAll(data);
+            localStorage.setItem('data', JSON.stringify(Article.all));
+            articleView.initIndexPage();
+          });
+          //TODO: Now call the correct method here that will render the index page.
+          // Article.loadAll();
+        } else {
+          var localData = localStorage.getItem('data');
+          Article.loadAll(JSON.parse(localData));
+        }
+        articleView.initIndexPage();
+      }
+    });
 
   } else {
     /* TODO: When we don't already have our data, we need to:
@@ -73,18 +93,31 @@ Article.fetchAll = function() {
       3. And then render the index page (What method was that?) */
     $.getJSON('data/hackerIpsum.json', function(data){
       console.log(data);
-      // var jsonData = 
       Article.loadAll(data);
       localStorage.setItem('data', JSON.stringify(Article.all));
       articleView.initIndexPage();
+    }).success(function(data, message, xhr) {
+      console.log('entered the function');
+      var eTag1 = xhr.getResponseHeader('eTag');
+      localStorage.setItem('eTag1', JSON.stringify(eTag1));
     });
+
+    // $.ajax({
+    //   url: 'data/hackerIpsum.json',
+    //   sucess: function (data, message, xhr) {
+    //     console.log('entered the function');
+    //     var eTag1 = xhr.getResponseHeader('eTag');
+    //     localStorage.setItem('eTag1', JSON.stringify(eTag1));
+    //   }
+    // });
   }
 };
 
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
-   lab will be saving the eTag located in Headers, to see if it's been updated!
-  Article.fetchAll = function() {
+   lab will be saving the eTag located in Headers, to see if it's been updated!*/
+
+  /*Article.fetchAll = function() {
     if (localStorage.hackerIpsum) {
       // Let's make a request to get the eTag (hint: you may need to use a different
       // jQuery method for this more explicit request).
