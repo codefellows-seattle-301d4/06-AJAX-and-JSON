@@ -49,10 +49,12 @@ Article.fetchAll = function() {
      2. Then We can render the index page (using the proper method on the
         articleView object). */
 
-    // Article.loadAll(//TODO: Process our localStorage!
+    // Article.loadAll(//DONE: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
-    //TODO: Now call the correct method here that will render the index page.
+    //DONE: Now call the correct method here that will render the index page.
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+    articleView.initIndexPage();
   } else {
     /* DONE: When we don't already have our data, we need to:
 
@@ -65,12 +67,10 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
-    $.getJSON('data/backup/ipsumArticles.json', function(data) {
+    $.getJSON('data/hackerIpsum.json', function(data) {
       Article.loadAll(data);
-      localStorage.articleAll = JSON.stringify(Article.all);
-      Article.all.forEach(function(a) {
-        $('#articles').append(a.toHtml($('#article-template')));
-      });
+      localStorage.hackerIpsum = JSON.stringify(data);
+      articleView.initIndexPage();
     });
   }
 };
