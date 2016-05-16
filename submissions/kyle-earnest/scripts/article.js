@@ -44,6 +44,19 @@ Article.loadAll = function(dataWePassIn) {
  source, process it, then hand off control to the View. */
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      success: function (data, message, xhr) {
+        var eTag = xhr.getResponseHeader('eTag');
+        console.log(message, eTag);
+        localStorage.eTag = eTag;
+      }
+      if (localStorage.eTag === eTag){
+        Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+        articleView.initIndexPage();
+        console.log('they are equal');
+      };
+    });
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
@@ -54,6 +67,12 @@ Article.fetchAll = function() {
     // );
     //TODO: Now call the correct method here that will render the index page.
   } else {
+    console.log('else');
+    $.getJSON('data/hackerIpsum.json', function(data){
+      Article.loadAll(data);
+      localStorage.hackerIpsum = JSON.stringify(data);
+      articleView.initIndexPage();
+    });
     /* TODO: When we don't already have our data, we need to:
 
      - Retrieve our JSON file with AJAX
@@ -71,10 +90,10 @@ Article.fetchAll = function() {
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
    lab will be saving the eTag located in Headers, to see if it's been updated!
-  Article.fetchAll = function() {
-    if (localStorage.hackerIpsum) {
-      // Let's make a request to get the eTag (hint: you may need to use a different
-      // jQuery method for this more explicit request).
-  } else {}
-}
-*/
+   */
+// Article.fetchAll = function() {
+//   if (localStorage.hackerIpsum) {
+//       // Let's make a request to get the eTag (hint: you may need to use a different
+//       // jQuery method for this more explicit request).
+//   } else {}
+// };
