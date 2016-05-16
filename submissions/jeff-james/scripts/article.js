@@ -43,7 +43,7 @@ Article.loadAll = function(dataWePassIn) {
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View. */
 Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
+  if (localStorage.data) {
     /* When our data is already in localStorage:
      1. We can process it by calling the .loadAll() method (started below),
      2. Then We can render the index page (using the proper method on the
@@ -52,8 +52,12 @@ Article.fetchAll = function() {
     // Article.loadAll(//TODO: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
+    console.log('local storage exists');
+    var localData = localStorage.getItem('data');
+    Article.loadAll(JSON.parse(localData));
     //TODO: Now call the correct method here that will render the index page.
     // Article.loadAll();
+    articleView.initIndexPage();
 
   } else {
     /* TODO: When we don't already have our data, we need to:
@@ -69,8 +73,9 @@ Article.fetchAll = function() {
       3. And then render the index page (What method was that?) */
     $.getJSON('data/hackerIpsum.json', function(data){
       console.log(data);
-      var jsonData = Article.loadAll(data);
-      localStorage.setItem(data, JSON.stringify(Article.all));
+      // var jsonData = 
+      Article.loadAll(data);
+      localStorage.setItem('data', JSON.stringify(Article.all));
       articleView.initIndexPage();
     });
   }
