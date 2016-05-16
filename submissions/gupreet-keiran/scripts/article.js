@@ -52,13 +52,15 @@ Article.fetchAll = function() {
     // Article.loadAll(//TODO: Process our localStorage!
     // Tip: Be careful when handling different data types between localStorage!
     // );
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
     //TODO: Now call the correct method here that will render the index page.
+    articleView.initIndexPage();
   } else {
-     $.getJSON("data/hackerIpsum.json",function(data){
-        Article.loadAll(data);
-        localStorage.hackerIpsum = data;
-        articleView.initIndexPage();
-      });
+    $.getJSON('data/hackerIpsum.json',function(data){
+      Article.loadAll(data);
+      localStorage.hackerIpsum = JSON.stringify(data);
+      articleView.initIndexPage();
+    });
 
     /* TODO: When we don't already have our data, we need to:
 
@@ -76,7 +78,7 @@ Article.fetchAll = function() {
 
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
    get some additional typing practice here. Our main goal in this part of the
-   lab will be saving the eTag located in Headers, to see if it's been updated!
+   lab will be saving the eTag located in Headers, to see if it's been updated!*
   Article.fetchAll = function() {
     if (localStorage.hackerIpsum) {
       // Let's make a request to get the eTag (hint: you may need to use a different

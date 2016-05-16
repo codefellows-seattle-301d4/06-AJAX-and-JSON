@@ -85,15 +85,15 @@
       &copy; 2016 Code Fellows | Static Blog | Happy Ipsum!
     </footer>
 
-    <script src="/vendor/scripts/jquery-2.1.4.js"></script>
-    <script src="/vendor/scripts/handlebars.js"></script>
-    <script src="/vendor/scripts/marked.js"></script>
-    <script src="/scripts/article.js"></script>
-    <script src="/scripts/articleView.js"></script>
+    <script src="vendor/scripts/jquery-2.1.4.js"></script>
+    <script src="vendor/scripts/handlebars.js"></script>
+    <script src="vendor/scripts/marked.js"></script>
+    <script src="scripts/article.js"></script>
+    <script src="scripts/articleView.js"></script>
     <script>
       // TODO: What Model-layer 'Article' function do we need to call, to
       // initiate the retrieval of data?
-      articleView.initIndexPage ();
+      Article.fetchAll();
     </script>
   </body>
 </html>
