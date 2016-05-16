@@ -54,7 +54,7 @@ Article.fetchAll = function() {
     // );
     //TODO: Now call the correct method here that will render the index page.
   } else {
-    /* TODO: When we don't already have our data, we need to:
+    /* DONE: When we don't already have our data, we need to:
 
      - Retrieve our JSON file with AJAX
        (which jQuery method is best for this?).
@@ -65,10 +65,12 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
-    $.getJSON('../data/backup/ipsumArticles.json', function(data) {
+    $.getJSON('data/backup/ipsumArticles.json', function(data) {
       Article.loadAll(data);
-      localStorage.articleAll = Article.all;
-      Article.toHtml();
+      localStorage.articleAll = JSON.stringify(Article.all);
+      Article.all.forEach(function(a) {
+        $('#articles').append(a.toHtml($('#article-template')));
+      });
     });
   }
 };
