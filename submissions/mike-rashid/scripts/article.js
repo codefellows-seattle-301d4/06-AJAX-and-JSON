@@ -67,6 +67,11 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
+    $.getJSON('/data/hackerIpsum.json', function(data){
+      Article.loadAll(data);
+      localStorage.hackerIpsum = JSON.stringify(data);
+      articleView.initIndexPage();
+    });
   }
 };
 
