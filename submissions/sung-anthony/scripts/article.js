@@ -76,9 +76,14 @@ Article.fetchAll = function() {
       2. Store that same data in localStorage so we can skip the server call next time
 
       3. And then render the index page (What method was that?) */
-    Article.getData('../data/hackerIpsum.json').success(function(data, message, xhr) {
-      var eTag = xhr.getResponseHeader('etag');
-      localStorage.setItem('stringedETag', JSON.stringify(eTag));
+
+    $.ajax( {
+      url: '../data/hackerIpsum.json',
+      success: function(data, message, xhr) {
+        Article.getData('../data/hackerIpsum.json');
+        var eTag = xhr.getResponseHeader('etag');
+        localStorage.setItem('stringedETag', JSON.stringify(eTag));
+      }
     });
   }
 };
@@ -94,6 +99,7 @@ Article.getData = function(filePath) {
     Article.loadAll(data);
     localStorage.setItem('hackerIpsum', JSON.stringify(Article.all));
     Article.appendArticles(Article.all);
+    articleView.initIndexPage();
   });
 };
 /* Great work so far! STRETCH GOAL TIME! Refactor your fetchAll above, or
